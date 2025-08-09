@@ -1,6 +1,6 @@
-### nodejs-user-auth-crud-api
+# nodejs-user-auth-crud-api
 
-# Authentication APIs
+### Authentication APIs
 
 ```
 const express = require('express')
