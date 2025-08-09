@@ -13,6 +13,7 @@ app.use(express.json())
 let db = null
 const dbPath = path.join(__dirname, 'userData.db')
 
+// Backend + Database Setup
 const initializeDBandServer = async () => {
   try {
     db = await open({
@@ -86,6 +87,7 @@ app.put('/change-password/', async (req, res) => {
     if (isPasswordMatched) {
       if (validatePassword(newPassword)) {
         const hashPassword = await bcrypt.hash(newPassword, 10)
+        // Update Password
         const updatePasswordQuery = `
         UPDATE
           user
@@ -107,5 +109,4 @@ app.put('/change-password/', async (req, res) => {
 initializeDBandServer()
 
 module.exports = app
-
 ```
