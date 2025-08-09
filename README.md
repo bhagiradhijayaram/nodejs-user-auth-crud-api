@@ -151,7 +151,7 @@ const convertDataFun = dbObject => {
   }
 }
 
-// API 1
+// Getting Players Data From Database
 app.get('/players/', async (req, res) => {
   const getPlayersQuery = 'SELECT * FROM cricket_team'
   const playersData = await db.all(getPlayersQuery)
@@ -159,7 +159,7 @@ app.get('/players/', async (req, res) => {
   res.send(convertData)
 })
 
-// API 2
+// Add Players Data into Database
 app.post('/players/', async (req, res) => {
   const playerDetails = req.body
   const {playerName, jerseyNumber, role} = playerDetails
@@ -169,7 +169,7 @@ app.post('/players/', async (req, res) => {
   res.send('Player Added to Team')
 })
 
-// API 3
+// Getting Specific Player Data From Database
 app.get('/players/:playerId/', async (req, res) => {
   const {playerId} = req.params
   const getplayerQuery = `SELECT * FROM cricket_team WHERE player_id = ${playerId}`
@@ -181,7 +181,7 @@ app.get('/players/:playerId/', async (req, res) => {
   }
 })
 
-// API 4
+// Updated Player Data
 app.put('/players/:playerId/', async (req, res) => {
   const {playerId} = req.params
   const playerDetails = req.body
@@ -195,12 +195,11 @@ app.put('/players/:playerId/', async (req, res) => {
   WHERE 
   player_id = ${playerId}
   `
-
   await db.run(updataPlayerQuery)
   res.send('Player Details Updated')
 })
 
-// API 5
+// Delete Player Data From Database
 app.delete('/players/:playerId/', async (req, res) => {
   const {playerId} = req.params
   const deletePlayerQuery = `DELETE FROM cricket_team WHERE player_id = ${playerId}`
