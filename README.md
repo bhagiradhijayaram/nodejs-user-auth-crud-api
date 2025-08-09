@@ -1,5 +1,6 @@
 # nodejs-user-auth-crud-api
 
+```
 const express = require('express')
 const path = require('path')
 const sqlite = require('sqlite3')
@@ -106,3 +107,5 @@ app.put('/change-password/', async (req, res) => {
 initializeDBandServer()
 
 module.exports = app
+
+```
