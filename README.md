@@ -112,6 +112,8 @@ initializeDBandServer()
 
 module.exports = app
 ```
+
+### CRUD Operations APIs
 ```
 const express = require('express')
 const {open} = require('sqlite')
