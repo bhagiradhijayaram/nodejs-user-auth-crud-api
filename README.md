@@ -110,3 +110,99 @@ initializeDBandServer()
 
 module.exports = app
 ```
+```
+const express = require('express')
+const {open} = require('sqlite')
+const sqlite = require('sqlite3')
+const path = require('path')
+const app = express()
+app.use(express.json())
+
+let db = null
+const dbPath = path.join(__dirname, 'cricketTeam.db')
+
+// Backend + Database Connection
+const initializeDBAndServer = async () => {
+  try {
+    db = await open({
+      filename: dbPath,
+      driver: sqlite.Database,
+    })
+    app.listen(3000, () => {
+      console.log('Server Running at http://localhost/3000')
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+initializeDBAndServer()
+
+const convertDataFun = dbObject => {
+  return {
+    playerId: dbObject.player_id,
+    playerName: dbObject.player_name,
+    jerseyNumber: dbObject.jersey_number,
+    role: dbObject.role,
+  }
+}
+
+// API 1
+app.get('/players/', async (req, res) => {
+  const getPlayersQuery = 'SELECT * FROM cricket_team'
+  const playersData = await db.all(getPlayersQuery)
+  const convertData = playersData.map(i => convertDataFun(i))
+  res.send(convertData)
+})
+
+// API 2
+app.post('/players/', async (req, res) => {
+  const playerDetails = req.body
+  const {playerName, jerseyNumber, role} = playerDetails
+  const insertDataQuery = `INSERT INTO cricket_team(player_name,jersey_number,role) VALUES('${playerName}','${jerseyNumber}', '${role}')`
+  const insertData = await db.run(insertDataQuery)
+  console.log(playerDetails)
+  res.send('Player Added to Team')
+})
+
+// API 3
+app.get('/players/:playerId/', async (req, res) => {
+  const {playerId} = req.params
+  const getplayerQuery = `SELECT * FROM cricket_team WHERE player_id = ${playerId}`
+  const playerData = await db.get(getplayerQuery)
+  if (playerData) {
+    res.send(playerData)
+  } else {
+    res.send('player not found')
+  }
+})
+
+// API 4
+app.put('/players/:playerId/', async (req, res) => {
+  const {playerId} = req.params
+  const playerDetails = req.body
+  const {playerName, jerseyNumber, role} = playerDetails
+  const updataPlayerQuery = `
+  UPDATE cricket_team 
+  SET
+  player_name =  '${playerName}',
+  jersey_number = '${jerseyNumber}',
+  role = '${role}'
+  WHERE 
+  player_id = ${playerId}
+  `
+
+  await db.run(updataPlayerQuery)
+  res.send('Player Details Updated')
+})
+
+// API 5
+app.delete('/players/:playerId/', async (req, res) => {
+  const {playerId} = req.params
+  const deletePlayerQuery = `DELETE FROM cricket_team WHERE player_id = ${playerId}`
+  await db.run(deletePlayerQuery)
+  res.send('Player Removed')
+})
+
+module.exports = app
+```
