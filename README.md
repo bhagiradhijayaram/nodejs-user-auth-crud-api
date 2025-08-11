@@ -426,3 +426,100 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoc
   "deaths": 104
 }
 ```
+### Response
+
+```
+API 1
+"Method": "POST" 
+"Status-Code": "200 - OK" 
+"content-length": "166"
+"content-type": "application/json; charset=utf-8"
+ 
+
+{
+    "jwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODgzMDE1fQ.qsVDJ3anz9J5Yrf7xNK5nY-25ivJPOrgJjlUW1PaauQ"
+}
+
+API 2
+
+"Method": "GET" 
+"Status-Code": "200 - OK" 
+"content-length": "2226"
+"content-type": "application/json; charset=utf-8"
+ 
+
+[
+    {
+        "stateId": 1,
+        "stateName": "Andaman and Nicobar Islands",
+        "population": 380581
+    },
+    {
+        "stateId": 2,
+        "stateName": "Andhra Pradesh",
+        "population": 49386799
+    },
+    {
+        "stateId": 3,
+        "stateName": "Arunachal Pradesh",
+        "population": 1382611
+    },
+    ....
+    ....
+    ....
+]
+
+API 3
+"Method": "GET" 
+"Status-Code": "200 - OK" 
+"content-length": "55"
+"content-type": "application/json; charset=utf-8"
+ 
+
+{
+    "stateId": 8,
+    "stateName": "Delhi",
+    "population": 16787941
+}
+
+API 4
+"Method": "POST" 
+"Status-Code": "200 - OK" 
+"content-length": "27"
+"content-type": "text/html; charset=utf-8"
+ 
+
+District Successfully Added
+API 5
+"Method": "GET" 
+"Status-Code": "200 - OK" 
+"content-length": "104"
+"content-type": "application/json; charset=utf-8"
+ 
+
+{
+    "districtId": 3,
+    "districtName": "Nadia",
+    "stateId": 3,
+    "cases": 9628,
+    "cured": 6524,
+    "active": 3000,
+    "deaths": 104
+}
+API 6
+"Method": "DELETE" 
+"Status-Code": "200 - OK" 
+"content-length": "16"
+"content-type": "text/html; charset=utf-8"
+ 
+
+District Removed
+
+API 7
+"Method": "PUT" 
+"Status-Code": "200 - OK" 
+"content-length": "24"
+"content-type": "text/html; charset=utf-8"
+ 
+
+District Details Updated
