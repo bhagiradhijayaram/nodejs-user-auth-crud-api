@@ -338,5 +338,56 @@ app.get('/districts/:districtId/', authenticateToken, async (req, res) => {
   res.send(districtDataCaseConversionFun(districtData))
 })
 
+app.delete('/districts/:districtId/', authenticateToken, async (req, res) => {
+  const {districtId} = req.params
+  const getDistrictQuery = `
+  DELETE FROM district WHERE district_id = '${districtId}'`
+  await db.run(getDistrictQuery)
+  res.send('District Removed')
+})
+
 module.exports = app
+```
+
+### Testing
+```
+###
+POST http://localhost:3000/login/
+Content-Type: application/json
+
+{
+  "username": "christopher_phillips",
+  "password": "christy@123"
+}
+
+###
+GET http://localhost:3000/states/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY
+
+###
+GET http://localhost:3000/states/8/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
+
+###
+POST http://localhost:3000/districts/
+Content-Type: application/json
+
+{
+  "districtName": "Bagalkot",
+  "stateId": 3,
+  "cases": 2323,
+  "cured": 2000,
+  "active": 315,
+  "deaths": 8
+}
+
+###
+GET http://localhost:3000/districts/2/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
+
+
+###
+DELETE http://localhost:3000/districts/2/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
+
 ```
