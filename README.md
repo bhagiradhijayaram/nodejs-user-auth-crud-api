@@ -209,3 +209,134 @@ app.delete('/players/:playerId/', async (req, res) => {
 
 module.exports = app
 ```
+
+### Task 
+
+```
+const express = require('express')
+const path = require('path')
+const {open} = require('sqlite')
+const sqlite = require('sqlite3')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const app = express()
+
+app.use(express.json())
+
+let db = null
+const dbPath = path.join(__dirname, 'covid19IndiaPortal.db')
+
+const initializeDBandServer = async () => {
+  try {
+    db = await open({
+      filename: dbPath,
+      driver: sqlite.Database,
+    })
+    app.listen(3000, () => {
+      console.log('Server Runnin at http://localhost:3000/')
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+initializeDBandServer()
+
+//  Data Case Conversion
+const statesDataCaseConversionFun = dbData => {
+  return {
+    stateId: dbData.state_id,
+    stateName: dbData.state_name,
+    population: dbData.population,
+  }
+}
+
+const districtDataCaseConversionFun = dbData => {
+  return {
+    districtId: dbData.district_id,
+    districtName: dbData.district_name,
+    stateId: dbData.state_id,
+    cases: dbData.cases,
+    cured: dbData.cured,
+    active: dbData.active,
+    deaths: dbData.deaths,
+  }
+}
+
+// Middleware Function
+const authenticateToken = async (req, res, next) => {
+  let jwtToken
+  const authHeader = req.headers['authorization']
+  if (authHeader !== undefined) {
+    jwtToken = authHeader.split(' ')[1]
+  }
+  if (jwtToken === undefined) {
+    res.status(401).send('Invalid JWT Token')
+  } else {
+    jwt.verify(jwtToken, 'xyz234', async (error, payload) => {
+      if (error) {
+        res.status(400).send('Invalid JWT Token')
+      } else {
+        next()
+      }
+    })
+  }
+}
+
+// Login API
+app.post('/login/', async (req, res) => {
+  const {username, password} = req.body
+  const getUserQuery = `SELECT * FROM user WHERE username = '${username}'`
+  const dbUser = await db.get(getUserQuery)
+  if (dbUser === undefined) {
+    res.status(400).send('Invalid user')
+  } else {
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password)
+    if (isPasswordMatched) {
+      const payload = {username: username}
+      const jwtToken = jwt.sign(payload, 'xyz234')
+      res.send({jwtToken})
+    } else {
+      res.status(400).send('Invalid password')
+    }
+  }
+})
+
+// Getting Data From Database (Only Authenticated User)
+app.get('/states/', authenticateToken, async (req, res) => {
+  const getStatesQuery = `SELECT * FROM state`
+  const statesData = await db.all(getStatesQuery)
+  const caseConverstionData = statesData.map(item =>
+    statesDataCaseConversionFun(item),
+  )
+  res.send(caseConverstionData)
+})
+
+// Getting Specific State Data (Only Authenticated User)
+app.get('/states/:stateId/', authenticateToken, async (req, res) => {
+  const {stateId} = req.params
+  const getStateQuery = `SELECT * FROM state WHERE state_id = '${stateId}'`
+  const stateData = await db.get(getStateQuery)
+  res.send(statesDataCaseConversionFun(stateData))
+})
+
+app.post('/districts/', authenticateToken, async (req, res) => {
+  const {stateId, districtName, cases, cured, active, deaths} = req.body
+  const addDistrictQuery = `
+  INSERT INTO district(state_id, district_name, cases, cured, active, deaths) 
+  VALUES('${stateId}','${districtName}','${cases}','${cured}','${active}','${deaths}')
+  `
+  await db.run(addDistrictQuery)
+  res.send('District Successfully Added')
+})
+
+app.get('/districts/:districtId/', authenticateToken, async (req, res) => {
+  const {districtId} = req.params
+  const getDistrictQuery = `
+  SELECT * FROM district WHERE district_id = '${districtId}'`
+  const districtData = await db.get(getDistrictQuery)
+  res.send(districtDataCaseConversionFun(districtData))
+})
+
+module.exports = app
+```
