@@ -1,4 +1,4 @@
-# nodejs-user-auth-crud-api
+# Nodejs-user-auth-crud-api
 
 ### Authentication APIs
 
