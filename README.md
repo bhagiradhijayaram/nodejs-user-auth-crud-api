@@ -346,6 +346,28 @@ app.delete('/districts/:districtId/', authenticateToken, async (req, res) => {
   res.send('District Removed')
 })
 
+
+// Update API
+app.put('/districts/:districtId/', authenticateToken, async (req, res) => {
+  const {districtId} = req.params
+  const {districtName, stateId, cases, cured, active, deaths} = req.body
+  const updateDistrictQuery = `
+  UPDATE district
+  SET 
+  district_name = '${districtName}',
+  state_id = '${stateId}',
+  cases = '${cases}',
+  cured = '${cured}',
+  active = '${active}',
+  deaths = '${deaths}'
+  WHERE
+  district_id = '${districtId}'
+  `
+  await db.run(updateDistrictQuery)
+  res.send('District Details Updated')
+})
+
+
 module.exports = app
 ```
 
@@ -382,7 +404,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/districts/2/
+GET http://localhost:3000/districts/3/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
 
 
@@ -390,4 +412,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoc
 DELETE http://localhost:3000/districts/2/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
 
+###
+PUT http://localhost:3000/districts/3/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyX3BoaWxsaXBzIiwiaWF0IjoxNzU0ODA3ODYzfQ.D13nnXVBVly0fwwJQHWfA9P5C8YMBHDmEdPPsS0ZmlY 
+
+{
+  "districtName": "Nadia",
+  "stateId": 3,
+  "cases": 9628,
+  "cured": 6524,
+  "active": 3000,
+  "deaths": 104
+}
 ```
